@@ -92,3 +92,6 @@ https://github.com/users/devssk/projects/1
 
 ### 플로우 차트
 ![img1.png](img/img1.png)
+
+### API 명세서
+[README2.md](README2.md)
