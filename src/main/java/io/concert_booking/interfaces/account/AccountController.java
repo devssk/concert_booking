@@ -18,8 +18,8 @@ public class AccountController {
         return new ResponseDto(ResponseCode.SUCC, new AccountDto.PaymentResponse("2024 IU CONCERT HER", "2024-03-03", 1, 169000L));
     }
 
-    @GetMapping("/memberId/balance")
-    public ResponseDto getAccountBalance() {
+    @GetMapping("/{memberId}/balance")
+    public ResponseDto getAccountBalance(@PathVariable(name = "memberId") Long memberId) {
         return new ResponseDto(ResponseCode.SUCC, new AccountDto.AccountBalanceResponse(30000L));
     }
 
