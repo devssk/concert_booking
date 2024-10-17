@@ -31,9 +31,9 @@ public class QueueFacade {
     private final MemberService memberService;
 
     @Transactional
-    public QueueFacadeDto.RegisterQueueResult registerQueue(QueueFacadeDto.RegisterQueueCriteria req) {
-        long concertInfoId = req.concertInfoId();
-        long memberId = req.memberId();
+    public QueueFacadeDto.RegisterQueueResult registerQueue(QueueFacadeDto.RegisterQueueCriteria criteria) {
+        long concertInfoId = criteria.concertInfoId();
+        long memberId = criteria.memberId();
 
         memberService.getMember(memberId);
         ConcertInfoDomainDto.GetConcertInfoInfo concertInfo = concertInfoService.getConcertInfo(concertInfoId);
