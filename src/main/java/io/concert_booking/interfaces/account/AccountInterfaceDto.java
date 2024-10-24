@@ -1,6 +1,7 @@
 package io.concert_booking.interfaces.account;
 
-import io.concert_booking.interfaces.exception.ValidException;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 
 public class AccountInterfaceDto {
 
@@ -8,14 +9,14 @@ public class AccountInterfaceDto {
             Long accountId,
             Long amount
     ) {
-        public ChargeRequest {
+        public void validate() {
             if (accountId == null || amount == null) {
                 String check = accountId == null ? "accountId" : "amount";
-                throw new ValidException(check + "를 입력해 주세요.");
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
             if (accountId <= 0 || amount <= 0) {
                 String check = accountId <= 0 ? "accountId" : "amount";
-                throw new ValidException(check + "의 올바른 범위를 입력해 주세요.");
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
         }
     }
@@ -27,18 +28,17 @@ public class AccountInterfaceDto {
     ) {}
 
     public record PaymentRequest(
-            String token,
             Long concertSeatId,
             Long amount
     ) {
-        public PaymentRequest {
-            if (token == null || token.isEmpty() ||  concertSeatId == null || amount == null) {
-                String check = token == null ? "token" : token.isEmpty() ? "token" : concertSeatId == null ? "concertSeatId" : "amount";
-                throw new ValidException(check + "를 입력해 주세요.");
+        public void validate() {
+            if (concertSeatId == null || amount == null) {
+                String check = concertSeatId == null ? "concertSeatId" : "amount";
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
             if (concertSeatId <= 0 || amount <= 0) {
                 String check = concertSeatId <= 0 ? "concertSeatId" : "amount";
-                throw new ValidException(check + "의 올바른 범위를 입력해 주세요.");
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
         }
     }

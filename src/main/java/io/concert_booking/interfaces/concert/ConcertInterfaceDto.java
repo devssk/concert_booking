@@ -1,6 +1,7 @@
 package io.concert_booking.interfaces.concert;
 
-import io.concert_booking.interfaces.exception.ValidException;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 
 public class ConcertInterfaceDto {
 
@@ -19,16 +20,11 @@ public class ConcertInterfaceDto {
     ) {}
 
     public record OccupancySeatRequest(
-            String token,
             Long concertSeatId
     ) {
-        public OccupancySeatRequest {
-            if (token == null || token.isEmpty()) {
-                throw new ValidException("token을 입력해 주세요.");
-            }
+        public void validate() {
             if (concertSeatId == null || concertSeatId <= 0) {
-                String message = concertSeatId == null ? "concertSeatId를 입력해 주세요." : "concertSeatId의 올바른 범위를 입력해 주세요.";
-                throw new ValidException(message);
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, "concertSeatId");
             }
         }
     }
