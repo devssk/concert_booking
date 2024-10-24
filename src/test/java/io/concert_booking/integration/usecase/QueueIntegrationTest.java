@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -28,6 +28,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class QueueIntegrationTest {
 
     @Autowired
@@ -63,7 +64,6 @@ public class QueueIntegrationTest {
     }
 
     @Test
-    @Rollback
     @DisplayName("정상 토큰 발급 및 대기열 등록")
     void registerQueueTest() throws Exception {
         // given
@@ -84,7 +84,6 @@ public class QueueIntegrationTest {
     }
 
     @Test
-    @Rollback
     @DisplayName("나의 대기열 조회")
     void getMyQueueNumberTest() {
         // given

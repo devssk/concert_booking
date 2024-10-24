@@ -1,5 +1,6 @@
 package io.concert_booking.domain;
 
+import io.concert_booking.common.exception.ConcertBookingException;
 import io.concert_booking.domain.account.dto.AccountDomainDto;
 import io.concert_booking.domain.account.entity.Account;
 import io.concert_booking.domain.account.repository.AccountHistoryRepository;
@@ -49,10 +50,10 @@ class AccountServiceTest {
         doReturn(account).when(accountRepository).getAccountByIdForUpdate(anyLong());
 
         // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> accountService.paymentAccount(command));
+        Throwable throwable = assertThrows(ConcertBookingException.class, () -> accountService.paymentAccount(command));
 
         // then
-        assertEquals("잔액이 부족합니다.", throwable.getMessage());
+        assertEquals("잔액 부족", throwable.getMessage());
     }
 
 }
