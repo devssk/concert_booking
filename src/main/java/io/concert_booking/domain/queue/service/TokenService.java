@@ -1,14 +1,20 @@
 package io.concert_booking.domain.queue.service;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class TokenService {
 
@@ -27,22 +33,31 @@ public class TokenService {
             result = cipher.doFinal(mapToString(values).getBytes(StandardCharsets.UTF_8));
 
         } catch (Exception e) {
-
+            log.error("토큰 인코딩시 에러, trace : {}", e.getMessage());
+            throw new ConcertBookingException(ErrorCode.TOKEN_CIPHER_ERROR);
         }
 
         return byteArrayToHexString(result);
     }
 
-    public Map<String, Long> decodeToken(String token) throws Exception {
+    public Map<String, Long> decodeToken(String token) {
         SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
         IvParameterSpec ivParameterSpec = new IvParameterSpec(SECRET_KEY.substring(0, 16).getBytes());
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        String data;
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+            byte[] bytes = hexStringToByteArray(token);
 
-        byte[] bytes = hexStringToByteArray(token);
-
-        String data = new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
+            data = new String(cipher.doFinal(bytes), StandardCharsets.UTF_8);
+        } catch (InvalidKeyException | BadPaddingException e) {
+            log.error("유효하지 않는 토큰 에러, trace : {}", e.getMessage());
+            throw new ConcertBookingException(ErrorCode.TOKEN_INVALID);
+        } catch (Exception e) {
+            log.error("토큰 디코딩시 에러, trace : {}", e.getMessage());
+            throw new ConcertBookingException(ErrorCode.TOKEN_CIPHER_ERROR);
+        }
 
         Map<String, Long> result = stringToMap(data);
 

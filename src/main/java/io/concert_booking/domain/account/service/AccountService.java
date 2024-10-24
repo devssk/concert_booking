@@ -1,5 +1,7 @@
 package io.concert_booking.domain.account.service;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.account.dto.AccountDomainDto;
 import io.concert_booking.domain.account.entity.Account;
 import io.concert_booking.domain.account.entity.AccountHistory;
@@ -54,7 +56,7 @@ public class AccountService {
         Long balance = getAccount.getBalance();
         Long amount = command.amount();
         if (balance - amount < 0) {
-            throw new IllegalArgumentException("잔액이 부족합니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_ENOUGH_BALANCE);
         }
         getAccount.paymentBalance(command.amount());
 

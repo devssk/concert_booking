@@ -1,11 +1,12 @@
 package io.concert_booking.domain.concert.service;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.concert.dto.ConcertSeatDomainDto;
 import io.concert_booking.domain.concert.entity.ConcertSeat;
 import io.concert_booking.domain.concert.entity.SeatStatus;
 import io.concert_booking.domain.concert.repository.ConcertSeatRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.StaleObjectStateException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class ConcertSeatService {
             getConcertSeat = concertSeatRepository.getConcertSeatById(command.concertSeatId());
             getConcertSeat.occupancySeat(command.memberId());
         } catch (Exception e) {
-            throw new IllegalArgumentException("이미 결제 대기중인 좌석입니다.");
+            throw new ConcertBookingException(ErrorCode.OCCUPANCY_SEAT);
         }
         return new ConcertSeatDomainDto.OccupancySeatInfo(getConcertSeat.getConcertSeatId(), getConcertSeat.getMemberId(), getConcertSeat.getSeatStatus().name());
     }
