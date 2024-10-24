@@ -1,6 +1,8 @@
 package io.concert_booking.application.queue;
 
 import io.concert_booking.application.queue.dto.QueueFacadeDto;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.concert.dto.ConcertDomainDto;
 import io.concert_booking.domain.concert.dto.ConcertInfoDomainDto;
 import io.concert_booking.domain.concert.service.ConcertInfoService;
@@ -54,12 +56,7 @@ public class QueueFacade {
 
     @Transactional
     public QueueFacadeDto.GetMyQueueNumberResult getMyQueueNumber(String token) {
-        Map<String, Long> payload;
-        try {
-            payload = tokenService.decodeToken(token);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
-        }
+        Map<String, Long> payload = tokenService.decodeToken(token);
 
         long queueId = payload.get("queueId");
         long concertId = payload.get("concertId");
@@ -70,7 +67,7 @@ public class QueueFacade {
 
         int index = findIndex.isPresent() ? findIndex.getAsInt() : -1;
         if (index < 0) {
-            throw new IllegalArgumentException("해당 대기열에 존재 하지 않습니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_FOUND_QUEUE);
         }
         QueueDomainDto.GetQueueListInfo getQueueInfo = queueInfoList.get(index);
 
