@@ -2,16 +2,17 @@ package io.concert_booking.interfaces.concert;
 
 import io.concert_booking.application.concert.ConcertFacade;
 import io.concert_booking.application.concert.dto.ConcertFacadeDto;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.concert.dto.BookingDomainDto;
 import io.concert_booking.domain.concert.service.BookingService;
 import io.concert_booking.interfaces.ResponseCode;
 import io.concert_booking.interfaces.ResponseDto;
-import io.concert_booking.interfaces.account.AccountInterfaceDto;
-import io.concert_booking.interfaces.exception.ValidException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,10 +43,8 @@ public class ConcertController {
     @Operation(summary = "콘서트 좌석 정보 조회", description = "콘서트 좌석 정보를 조회하는 기능")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ConcertInterfaceDto.ConcertSeatResponse.class)))
     @GetMapping("/info/seats")
-    public ResponseDto getConcertSeat(@RequestParam(name = "token") String token) {
-        if (token == null || token.isEmpty()) {
-            throw new ValidException("token을 입력해 주세요.");
-        }
+    public ResponseDto getConcertSeat(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
         List<ConcertFacadeDto.GetConcertSeatListResult> result = concertFacade.getConcertSeatList(token);
         return new ResponseDto(ResponseCode.SUCC, result.stream().map(concertSeatInfo -> new ConcertInterfaceDto.ConcertSeatResponse(
                 concertSeatInfo.concertInfoId(),
@@ -58,8 +57,10 @@ public class ConcertController {
     @Operation(summary = "콘서트 좌석 임시 점유", description = "콘서트 좌석을 임시 점유하는 기능")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = ConcertInterfaceDto.OccupancySeatResponse.class)))
     @PostMapping("/seats")
-    public ResponseDto occupancySeat(@RequestBody ConcertInterfaceDto.OccupancySeatRequest request) {
-        ConcertFacadeDto.OccupancyConcertSeatResult result = concertFacade.OccupancyConcertSeat(new ConcertFacadeDto.OccupancyConcertSeatCriteria(request.token(), request.concertSeatId()));
+    public ResponseDto occupancySeat(@RequestBody ConcertInterfaceDto.OccupancySeatRequest request, HttpServletRequest httpServletRequest) {
+        request.validate();
+        String token = httpServletRequest.getHeader("Authorization");
+        ConcertFacadeDto.OccupancyConcertSeatResult result = concertFacade.OccupancyConcertSeat(new ConcertFacadeDto.OccupancyConcertSeatCriteria(token, request.concertSeatId()));
         return new ResponseDto(ResponseCode.SUCC, new ConcertInterfaceDto.OccupancySeatResponse(result.concertSeatId()));
     }
 
@@ -68,8 +69,7 @@ public class ConcertController {
     @GetMapping("/booking/info")
     public ResponseDto getBookingInfo(@RequestParam("bookingId") Long bookingId) {
         if (bookingId == null || bookingId <= 0) {
-            String message = bookingId == null ? "bookingId를 입력해 주세요." : "accountId의 올바른 범위를 입력해 주세요.";
-            throw new ValidException(message);
+            throw new ConcertBookingException(ErrorCode.VALID_ERROR, "bookingId");
         }
         BookingDomainDto.GetBookingInfo result = bookingService.getBooking(bookingId);
         return new ResponseDto(ResponseCode.SUCC, new ConcertInterfaceDto.BookingInfoResponse(
@@ -86,8 +86,7 @@ public class ConcertController {
     @GetMapping("/booking/info_list")
     public ResponseDto getBookingInfoList(@RequestParam(name = "memberId") Long memberId) {
         if (memberId == null || memberId <= 0) {
-            String message = memberId == null ? "memberId를 입력해 주세요." : "accountId의 올바른 범위를 입력해 주세요.";
-            throw new ValidException(message);
+            throw new ConcertBookingException(ErrorCode.VALID_ERROR, "memberId");
         }
         List<BookingDomainDto.GetBookingListInfo> result = bookingService.getBookingList(memberId);
         return new ResponseDto(ResponseCode.SUCC, result.stream().map(bookingInfo -> new ConcertInterfaceDto.BookingInfoListResponse(
