@@ -2,6 +2,7 @@ package io.concert_booking.application;
 
 import io.concert_booking.application.queue.QueueFacade;
 import io.concert_booking.application.queue.dto.QueueFacadeDto;
+import io.concert_booking.common.exception.ConcertBookingException;
 import io.concert_booking.domain.queue.dto.QueueDomainDto;
 import io.concert_booking.domain.queue.entity.QueueStatus;
 import io.concert_booking.domain.queue.service.QueueService;
@@ -75,20 +76,6 @@ class QueueFacadeTest {
     }
 
     @Test
-    @DisplayName("대기열 가져오기 - 토큰 오류")
-    void getMyQueueNumberTest02() throws Exception {
-        // given
-        String token = "tempToken";
-        doThrow(new Exception()).when(tokenService).decodeToken(anyString());
-
-        // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> queueFacade.getMyQueueNumber(token));
-
-        // then
-        assertEquals("유효한 토큰이 아닙니다.", throwable.getMessage());
-    }
-
-    @Test
     @DisplayName("대기열 가져오기 - 대기열에 존재하지 않는 경우")
     void getMyQueueNumberTest03() throws Exception {
         // given
@@ -119,10 +106,10 @@ class QueueFacadeTest {
         doReturn(queueInfoList).when(queueService).getQueueList(anyLong(), any());
 
         // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> queueFacade.getMyQueueNumber(token));
+        Throwable throwable = assertThrows(ConcertBookingException.class, () -> queueFacade.getMyQueueNumber(token));
 
         // then
-        assertEquals("해당 대기열에 존재 하지 않습니다.", throwable.getMessage());
+        assertEquals("대기열에서 찾을 수 없음", throwable.getMessage());
     }
 
 }

@@ -1,9 +1,10 @@
 package io.concert_booking.infrastructure.concert;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.concert.entity.Performer;
 import io.concert_booking.domain.concert.repository.PerformerRepository;
 import io.concert_booking.infrastructure.concert.jpa.PerformerJpaRepository;
-import io.concert_booking.infrastructure.exception.EntityRowNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,7 @@ public class PerformerRepositoryImpl implements PerformerRepository {
         if (find.isPresent()) {
             return find.get();
         } else {
-            throw new EntityRowNotFoundException("해당 공연자를 찾을 수 없습니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_FOUND_ENTITY);
         }
     }
 }

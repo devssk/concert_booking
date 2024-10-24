@@ -1,9 +1,10 @@
 package io.concert_booking.infrastructure.account;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.account.entity.AccountHistory;
 import io.concert_booking.domain.account.repository.AccountHistoryRepository;
 import io.concert_booking.infrastructure.account.jpa.AccountHistoryJpaRepository;
-import io.concert_booking.infrastructure.exception.EntityRowNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class AccountHistoryRepositoryImpl implements AccountHistoryRepository {
         if (find.isPresent()) {
             return find.get();
         } else {
-            throw new EntityRowNotFoundException("해당 내역이 없습니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_FOUND_ENTITY);
         }
     }
 

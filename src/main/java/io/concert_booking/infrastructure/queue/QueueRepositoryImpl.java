@@ -1,9 +1,10 @@
 package io.concert_booking.infrastructure.queue;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.queue.entity.Queue;
 import io.concert_booking.domain.queue.entity.QueueStatus;
 import io.concert_booking.domain.queue.repository.QueueRepository;
-import io.concert_booking.infrastructure.exception.EntityRowNotFoundException;
 import io.concert_booking.infrastructure.queue.jpa.QueueJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class QueueRepositoryImpl implements QueueRepository {
         if (find.isPresent()) {
             return find.get();
         } else {
-            throw new EntityRowNotFoundException("해당 대기열이 없습니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_FOUND_ENTITY);
         }
     }
 

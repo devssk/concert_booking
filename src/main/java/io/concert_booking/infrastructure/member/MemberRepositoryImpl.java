@@ -1,8 +1,9 @@
 package io.concert_booking.infrastructure.member;
 
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.member.entity.Member;
 import io.concert_booking.domain.member.repository.MemberRepository;
-import io.concert_booking.infrastructure.exception.EntityRowNotFoundException;
 import io.concert_booking.infrastructure.member.jpa.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         if (find.isPresent()) {
             return find.get();
         } else {
-            throw new EntityRowNotFoundException("해당 유저를 찾을 수 없습니다.");
+            throw new ConcertBookingException(ErrorCode.NOT_FOUND_ENTITY);
         }
     }
 }

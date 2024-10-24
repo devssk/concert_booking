@@ -1,6 +1,7 @@
 package io.concert_booking.interfaces.queue;
 
-import io.concert_booking.interfaces.exception.ValidException;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 
 public class QueueInterfaceDto {
 
@@ -8,14 +9,14 @@ public class QueueInterfaceDto {
             Long userId,
             Long concertInfoId
     ) {
-        public IssueTokenRequest {
+        public void validate() {
             if (userId == null || concertInfoId == null) {
                 String check = userId == null ? "userId" : "concertInfoId";
-                throw new ValidException(check + "를 입력해 주세요.");
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
             if (userId <= 0 || concertInfoId <= 0) {
                 String check = userId <= 0 ? "userId" : "concertInfoId";
-                throw new ValidException(check + "의 올바른 범위를 입력해 주세요.");
+                throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
         }
     }

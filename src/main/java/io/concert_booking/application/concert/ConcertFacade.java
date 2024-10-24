@@ -1,6 +1,8 @@
 package io.concert_booking.application.concert;
 
 import io.concert_booking.application.concert.dto.ConcertFacadeDto;
+import io.concert_booking.common.exception.ConcertBookingException;
+import io.concert_booking.common.exception.ErrorCode;
 import io.concert_booking.domain.concert.dto.ConcertDomainDto;
 import io.concert_booking.domain.concert.dto.ConcertInfoDomainDto;
 import io.concert_booking.domain.concert.dto.ConcertSeatDomainDto;
@@ -41,21 +43,11 @@ public class ConcertFacade {
     }
 
     public List<ConcertFacadeDto.GetConcertSeatListResult> getConcertSeatList(String token) {
-        Map<String, Long> payload;
-        try {
-            payload = tokenService.decodeToken(token);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
-        }
+        Map<String, Long> payload = tokenService.decodeToken(token);
 
-        long queueId = payload.get("queueId");
         long concertId = payload.get("concertId");
         long concertInfoId = payload.get("concertInfoId");
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = queueService.getQueue(queueId);
-        if (!getQueueInfo.queueStatus().equals(QueueStatus.ENTER.name())) {
-            throw new IllegalArgumentException("대기열에 통과된 토큰이 아닙니다.");
-        }
         concertService.getConcert(concertId);
         concertInfoService.getConcertInfo(concertInfoId);
         List<ConcertSeatDomainDto.GetConcertSeatListInfo> concertSeatInfoList = concertSeatService.getConcertSeatList(concertInfoId);
@@ -72,12 +64,7 @@ public class ConcertFacade {
 
     @Transactional
     public ConcertFacadeDto.OccupancyConcertSeatResult OccupancyConcertSeat(ConcertFacadeDto.OccupancyConcertSeatCriteria criteria) {
-        Map<String, Long> payload;
-        try {
-            payload = tokenService.decodeToken(criteria.token());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
-        }
+        Map<String, Long> payload = tokenService.decodeToken(criteria.token());
 
         long queueId = payload.get("queueId");
         long memberId = payload.get("memberId");
@@ -85,17 +72,12 @@ public class ConcertFacade {
         long concertInfoId = payload.get("concertInfoId");
         long concertSeatId = criteria.concertSeatId();
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = queueService.getQueue(queueId);
-        if (!getQueueInfo.queueStatus().equals(QueueStatus.ENTER.name())) {
-            throw new IllegalArgumentException("대기열에 통과된 토큰이 아닙니다.");
-        }
-
         concertService.getConcert(concertId);
         concertInfoService.getConcertInfo(concertInfoId);
 
         ConcertSeatDomainDto.GetConcertSeatInfo concertSeat = concertSeatService.getConcertSeat(concertSeatId);
         if (!concertSeat.seatStatus().equals(SeatStatus.OPEN.name())) {
-            throw new IllegalArgumentException("이미 결제 대기중인 좌석입니다.");
+            throw new ConcertBookingException(ErrorCode.OCCUPANCY_SEAT);
         }
         ConcertSeatDomainDto.OccupancySeatInfo getConcertSeatInfo = concertSeatService.occupancySeat(new ConcertSeatDomainDto.OccupancySeatCommand(concertSeatId, memberId));
 

@@ -1,8 +1,8 @@
 package io.concert_booking.infrastructure;
 
+import io.concert_booking.common.exception.ConcertBookingException;
 import io.concert_booking.infrastructure.concert.BookingRepositoryImpl;
 import io.concert_booking.infrastructure.concert.jpa.BookingJpaRepository;
-import io.concert_booking.infrastructure.exception.EntityRowNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +33,10 @@ class BookingRepositoryImplTest {
         doReturn(Optional.empty()).when(bookingJpaRepository).findById(anyLong());
 
         // when
-        Throwable throwable = assertThrows(EntityRowNotFoundException.class, () -> bookingRepository.getBookingById(bookingId));
+        Throwable throwable = assertThrows(ConcertBookingException.class, () -> bookingRepository.getBookingById(bookingId));
 
         // then
-        assertEquals("해당 예약을 찾을 수 없습니다.", throwable.getMessage());
+        assertEquals("해당 ID로 찾을 수 없음", throwable.getMessage());
     }
 
 }

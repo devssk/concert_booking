@@ -2,6 +2,7 @@ package io.concert_booking.application;
 
 import io.concert_booking.application.account.AccountFacade;
 import io.concert_booking.application.account.dto.AccountFacadeDto;
+import io.concert_booking.common.exception.ConcertBookingException;
 import io.concert_booking.domain.account.dto.AccountDomainDto;
 import io.concert_booking.domain.account.service.AccountService;
 import io.concert_booking.domain.concert.dto.*;
@@ -97,7 +98,6 @@ class AccountFacadeTest {
         AccountFacadeDto.PaymentConcertCriteria criteria = new AccountFacadeDto.PaymentConcertCriteria(token, concertSeatId, amount);
 
         doReturn(payload).when(tokenService).decodeToken(token);
-        doReturn(getQueueInfo).when(queueService).getQueue(anyLong());
         doReturn(getConcertSeatInfo).when(concertSeatService).getConcertSeat(anyLong());
         doReturn(getMemberInfo).when(memberService).getMember(anyLong());
         doReturn(getConcertInfo).when(concertService).getConcert(anyLong());
@@ -122,57 +122,6 @@ class AccountFacadeTest {
     }
 
     @Test
-    @DisplayName("결제하기 - 토큰 에러")
-    void paymentConcertTest02() throws Exception {
-        // given
-        String token = "token";
-        long concertSeatId = 1L;
-        long amount = 169000L;
-        AccountFacadeDto.PaymentConcertCriteria criteria = new AccountFacadeDto.PaymentConcertCriteria(token, concertSeatId, amount);
-        doThrow(new Exception()).when(tokenService).decodeToken(anyString());
-
-        // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> accountFacade.paymentConcert(criteria));
-
-        // then
-        assertEquals("유효한 토큰이 아닙니다.", throwable.getMessage());
-    }
-
-    @Test
-    @DisplayName("결제하기 - 좌석을 점유 하지 않음")
-    void paymentConcertTest03() throws Exception {
-        // given
-        String token = "token";
-        long queueId = 1L;
-        long memberId = 1L;
-        long concertId = 1L;
-        long concertInfoId = 1L;
-        long concertSeatId = 1L;
-        long amount = 169000L;
-        LocalDateTime createdAtLocalDateTime = LocalDateTime.now().minusMinutes(3);
-        String createdAt = createdAtLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", queueId);
-        payload.put("memberId", memberId);
-        payload.put("concertId", concertId);
-        payload.put("concertInfoId", concertInfoId);
-
-        QueueDomainDto.GetQueueInfo getQueueInfo = new QueueDomainDto.GetQueueInfo(queueId, concertId, QueueStatus.ENTER.name(), createdAt);
-
-        AccountFacadeDto.PaymentConcertCriteria criteria = new AccountFacadeDto.PaymentConcertCriteria(token, concertSeatId, amount);
-
-        doReturn(payload).when(tokenService).decodeToken(token);
-        doReturn(getQueueInfo).when(queueService).getQueue(anyLong());
-
-        // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> accountFacade.paymentConcert(criteria));
-
-        // then
-        assertEquals("좌석을 점유한 토큰이 아닙니다.", throwable.getMessage());
-    }
-
-    @Test
     @DisplayName("결제하기 - 좌석 점유 시간 초과")
     void paymentConcertTest04() throws Exception {
         // given
@@ -193,20 +142,18 @@ class AccountFacadeTest {
         payload.put("concertId", concertId);
         payload.put("concertInfoId", concertInfoId);
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = new QueueDomainDto.GetQueueInfo(queueId, concertId, QueueStatus.OCCUPANCY.name(), createdAt);
         ConcertSeatDomainDto.GetConcertSeatInfo getConcertSeatInfo = new ConcertSeatDomainDto.GetConcertSeatInfo(concertSeatId, concertInfoId, seatNumber, SeatStatus.OCCUPANCY.name(), createdAtLocalDateTime, createdAtLocalDateTime);
 
         AccountFacadeDto.PaymentConcertCriteria criteria = new AccountFacadeDto.PaymentConcertCriteria(token, concertSeatId, amount);
 
         doReturn(payload).when(tokenService).decodeToken(token);
-        doReturn(getQueueInfo).when(queueService).getQueue(anyLong());
         doReturn(getConcertSeatInfo).when(concertSeatService).getConcertSeat(anyLong());
 
         // when
-        Throwable throwable = assertThrows(IllegalArgumentException.class, () -> accountFacade.paymentConcert(criteria));
+        Throwable throwable = assertThrows(ConcertBookingException.class, () -> accountFacade.paymentConcert(criteria));
 
         // then
-        assertEquals("좌석 임시 점유 시간이 종료되었습니다.", throwable.getMessage());
+        assertEquals("좌석 점유 시간 만료", throwable.getMessage());
     }
 
 }
