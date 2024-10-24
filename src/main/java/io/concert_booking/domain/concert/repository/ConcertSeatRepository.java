@@ -10,6 +10,8 @@ public interface ConcertSeatRepository {
 
     ConcertSeat getConcertSeatById(long concertSeatId);
 
+    ConcertSeat getConcertSeatByIdForUpdate(long concertSeatId);
+
     List<ConcertSeat> getAllConcertSeatByConcertInfoId(long concertInfoId);
 
     void updateConcertSeatStatusOccupancyExpired();
