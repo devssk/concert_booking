@@ -35,13 +35,11 @@ public class ConcertSeatService {
 
     @Transactional
     public ConcertSeatDomainDto.OccupancySeatInfo occupancySeat(ConcertSeatDomainDto.OccupancySeatCommand command) {
-        ConcertSeat getConcertSeat;
-        try {
-            getConcertSeat = concertSeatRepository.getConcertSeatById(command.concertSeatId());
-            getConcertSeat.occupancySeat(command.memberId());
-        } catch (Exception e) {
+        ConcertSeat getConcertSeat = concertSeatRepository.getConcertSeatByIdForUpdate(command.concertSeatId());
+        if (!getConcertSeat.getSeatStatus().equals(SeatStatus.OPEN)) {
             throw new ConcertBookingException(ErrorCode.OCCUPANCY_SEAT);
         }
+        getConcertSeat.occupancySeat(command.memberId());
         return new ConcertSeatDomainDto.OccupancySeatInfo(getConcertSeat.getConcertSeatId(), getConcertSeat.getMemberId(), getConcertSeat.getSeatStatus().name());
     }
 

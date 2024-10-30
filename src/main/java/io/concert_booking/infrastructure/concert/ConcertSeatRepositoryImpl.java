@@ -35,6 +35,12 @@ public class ConcertSeatRepositoryImpl implements ConcertSeatRepository {
         }
     }
 
+    @Transactional
+    @Override
+    public ConcertSeat getConcertSeatByIdForUpdate(long concertSeatId) {
+        return concertSeatJpaRepository.getConcertSeatByConcertSeatId(concertSeatId);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<ConcertSeat> getAllConcertSeatByConcertInfoId(long concertInfoId) {
