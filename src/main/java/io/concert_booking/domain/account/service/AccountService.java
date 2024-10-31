@@ -9,6 +9,10 @@ import io.concert_booking.domain.account.entity.AccountType;
 import io.concert_booking.domain.account.repository.AccountHistoryRepository;
 import io.concert_booking.domain.account.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +43,10 @@ public class AccountService {
         return new AccountDomainDto.GetAccountByMemberIdInfo(getAccount.getAccountId(), getAccount.getBalance());
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 500))
     @Transactional
     public AccountDomainDto.ChargeAccountInfo chargeAccount(AccountDomainDto.ChargeAccountCommand command) {
-        Account getAccount = accountRepository.getAccountByIdForUpdate(command.accountId());
+        Account getAccount = accountRepository.getAccountById(command.accountId());
         getAccount.chargeBalance(command.amount());
 
         AccountHistory accountHistory = new AccountHistory(getAccount.getAccountId(), AccountType.CHARGE, command.amount());
@@ -50,9 +55,10 @@ public class AccountService {
         return new AccountDomainDto.ChargeAccountInfo(getAccount.getAccountId(), accountHistory.getAmount(), getAccount.getBalance());
     }
 
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 500))
     @Transactional
     public AccountDomainDto.PaymentAccountInfo paymentAccount(AccountDomainDto.PaymentAccountCommand command) {
-        Account getAccount = accountRepository.getAccountByIdForUpdate(command.accountId());
+        Account getAccount = accountRepository.getAccountById(command.accountId());
         Long balance = getAccount.getBalance();
         Long amount = command.amount();
         if (balance - amount < 0) {
@@ -64,6 +70,11 @@ public class AccountService {
         accountHistoryRepository.save(accountHistory);
 
         return new AccountDomainDto.PaymentAccountInfo(getAccount.getAccountId(), accountHistory.getAccountHistoryId(), accountHistory.getAmount(), getAccount.getBalance());
+    }
+
+    @Recover
+    public void recover(ObjectOptimisticLockingFailureException e) {
+        throw new ConcertBookingException(ErrorCode.FAIL_UPDATE_ACCOUNT);
     }
 
 }
