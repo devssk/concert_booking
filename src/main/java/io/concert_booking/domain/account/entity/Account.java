@@ -1,10 +1,7 @@
 package io.concert_booking.domain.account.entity;
 
 import io.concert_booking.domain.EntityTimestamp;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +22,9 @@ public class Account extends EntityTimestamp {
     private Long memberId;
 
     private Long balance;
+
+    @Version
+    private int version;
 
     public void chargeBalance(long amount) {
         this.balance += amount;
