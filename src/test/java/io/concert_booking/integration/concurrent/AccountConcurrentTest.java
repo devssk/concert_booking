@@ -9,6 +9,8 @@ import io.concert_booking.infrastructure.member.jpa.MemberJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -32,6 +34,8 @@ public class AccountConcurrentTest {
     @Autowired
     AccountJpaRepository accountJpaRepository;
 
+    Logger log = LoggerFactory.getLogger(AccountConcurrentTest.class);
+
     @BeforeEach
     void setUp() {
         Member saveMember = memberJpaRepository.save(new Member("유애나"));
@@ -46,11 +50,11 @@ public class AccountConcurrentTest {
         long accountId = 1L;
         long amount = 1000L;
 
-        new AccountDomainDto.PaymentAccountCommand(accountId, amount);
         // when
         int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        long startTime = System.currentTimeMillis();
         for (int i = 0; i < threadCount; i++) {
             final int index = i + 1;
             executorService.execute(() -> {
@@ -63,6 +67,7 @@ public class AccountConcurrentTest {
             });
         }
         countDownLatch.await();
+        long endTime = System.currentTimeMillis();
 
         // then
         long balance = 200000L;
@@ -72,6 +77,7 @@ public class AccountConcurrentTest {
 
         Account result = accountJpaRepository.getAccountById(accountId);
 
+        log.info("time : {}ms", endTime - startTime);
         assertEquals(balance, result.getBalance());
     }
 
@@ -83,11 +89,11 @@ public class AccountConcurrentTest {
         long accountId = 1L;
         long amount = 1000L;
 
-        new AccountDomainDto.PaymentAccountCommand(accountId, amount);
         // when
         int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        long startTime = System.currentTimeMillis();
         for (int i = 0; i < threadCount; i++) {
             final int index = i + 1;
             executorService.execute(() -> {
@@ -100,6 +106,7 @@ public class AccountConcurrentTest {
             });
         }
         countDownLatch.await();
+        long endTime = System.currentTimeMillis();
 
         // then
         long balance = 200000L;
@@ -109,6 +116,7 @@ public class AccountConcurrentTest {
 
         Account result = accountJpaRepository.getAccountById(accountId);
 
+        log.info("time : {}ms", endTime - startTime);
         assertEquals(balance, result.getBalance());
     }
 
@@ -120,11 +128,11 @@ public class AccountConcurrentTest {
         long accountId = 1L;
         long amount = 1000L;
 
-        new AccountDomainDto.PaymentAccountCommand(accountId, amount);
         // when
         int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        long startTime = System.currentTimeMillis();
         for (int i = 1; i < threadCount + 1; i++) {
             final int index = i;
             executorService.execute(() -> {
@@ -146,6 +154,7 @@ public class AccountConcurrentTest {
             });
         }
         countDownLatch.await();
+        long endTime = System.currentTimeMillis();
 
         // then
         long balance = 200000L;
@@ -159,6 +168,7 @@ public class AccountConcurrentTest {
 
         Account result = accountJpaRepository.getAccountById(accountId);
 
+        log.info("time : {}ms", endTime - startTime);
         assertEquals(balance, result.getBalance());
     }
 
