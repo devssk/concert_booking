@@ -81,7 +81,7 @@ class QueueQuerydslRepositoryImpl implements QueueQuerydslRepository {
     public void deleteQueueByExpiredTime(int expiredMinute) {
         query
                 .delete(queue)
-                .where(queue.createdAt.before(LocalDateTime.now().minusSeconds(expiredMinute * 60L)))
+                .where(queue.updatedAt.before(LocalDateTime.now().minusSeconds(expiredMinute * 60L)))
                 .execute();
     }
 

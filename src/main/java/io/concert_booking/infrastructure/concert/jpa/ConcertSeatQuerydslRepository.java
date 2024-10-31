@@ -28,7 +28,7 @@ class ConcertSeatQuerydslRepositoryImpl implements ConcertSeatQuerydslRepository
                 .setNull(concertSeat.memberId)
                 .set(concertSeat.seatStatus, SeatStatus.OPEN)
                 .where(concertSeat.seatStatus.eq(SeatStatus.OCCUPANCY)
-                        .and(concertSeat.createdAt.before(LocalDateTime.now().minusSeconds(300))))
+                        .and(concertSeat.updatedAt.before(LocalDateTime.now().minusSeconds(300))))
                 .execute();
     }
 }
