@@ -43,7 +43,7 @@ public class AccountService {
         return new AccountDomainDto.GetAccountByMemberIdInfo(getAccount.getAccountId(), getAccount.getBalance());
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 500))
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 1000), recover = "chargeRecover")
     @Transactional
     public AccountDomainDto.ChargeAccountInfo chargeAccount(AccountDomainDto.ChargeAccountCommand command) {
         Account getAccount = accountRepository.getAccountById(command.accountId());
@@ -55,7 +55,7 @@ public class AccountService {
         return new AccountDomainDto.ChargeAccountInfo(getAccount.getAccountId(), accountHistory.getAmount(), getAccount.getBalance());
     }
 
-    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 500))
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 10, backoff = @Backoff(delay = 1000), recover = "paymentRecover")
     @Transactional
     public AccountDomainDto.PaymentAccountInfo paymentAccount(AccountDomainDto.PaymentAccountCommand command) {
         Account getAccount = accountRepository.getAccountById(command.accountId());
@@ -73,7 +73,12 @@ public class AccountService {
     }
 
     @Recover
-    public void recover(ObjectOptimisticLockingFailureException e) {
+    public AccountDomainDto.ChargeAccountInfo chargeRecover(ObjectOptimisticLockingFailureException e) {
+        throw new ConcertBookingException(ErrorCode.FAIL_UPDATE_ACCOUNT);
+    }
+
+    @Recover
+    public AccountDomainDto.PaymentAccountInfo paymentRecover(ObjectOptimisticLockingFailureException e) {
         throw new ConcertBookingException(ErrorCode.FAIL_UPDATE_ACCOUNT);
     }
 
