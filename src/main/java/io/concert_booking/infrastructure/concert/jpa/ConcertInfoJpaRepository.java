@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ConcertInfoJpaRepository extends JpaRepository<ConcertInfo, Long> {
+public interface ConcertInfoJpaRepository extends JpaRepository<ConcertInfo, Long>, ConcertInfoQuerydslRepository {
     List<ConcertInfo> getAllConcertInfoByConcertId(Long concertId);
 }

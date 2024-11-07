@@ -6,6 +6,7 @@ import io.concert_booking.domain.concert.repository.ConcertInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public class ConcertInfoService {
                 concertInfo.getConcertId(),
                 concertInfo.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         ))).toList();
+    }
+
+    public List<Long> getConcertInfoIdListByDate(LocalDate concertDate) {
+        return concertInfoRepository.getAllConcertInfoByConcertDate(concertDate);
     }
 
 }

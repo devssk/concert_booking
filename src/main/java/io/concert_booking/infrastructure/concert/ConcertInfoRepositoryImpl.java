@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,5 +40,10 @@ public class ConcertInfoRepositoryImpl implements ConcertInfoRepository {
     @Override
     public List<ConcertInfo> getAllConcertInfoByConcertId(long concertId) {
         return concertInfoJpaRepository.getAllConcertInfoByConcertId(concertId);
+    }
+
+    @Override
+    public List<Long> getAllConcertInfoByConcertDate(LocalDate concertDate) {
+        return getAllConcertInfoByConcertDate(concertDate);
     }
 }
