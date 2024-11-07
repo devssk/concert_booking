@@ -13,7 +13,8 @@ public enum ErrorCode {
     NOT_OCCUPANCY_TOKEN(HttpStatus.FORBIDDEN, "좌석을 점유하지 않은 토큰"),
     EXPIRED_OCCUPANCY_SEAT(HttpStatus.BAD_REQUEST, "좌석 점유 시간 만료"),
     NOT_ENOUGH_BALANCE(HttpStatus.BAD_REQUEST, "잔액 부족"),
-    FAIL_UPDATE_ACCOUNT(HttpStatus.INTERNAL_SERVER_ERROR, "충전 또는 결제 실패")
+    FAIL_UPDATE_ACCOUNT(HttpStatus.INTERNAL_SERVER_ERROR, "충전 또는 결제 실패"),
+    JSON_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 파싱 에러")
     ;
 
     private final HttpStatus status;
