@@ -134,7 +134,6 @@ public class ConcertFacade {
     public ConcertFacadeDto.OccupancyConcertSeatResult OccupancyConcertSeat(ConcertFacadeDto.OccupancyConcertSeatCriteria criteria) {
         Map<String, Long> payload = tokenService.decodeToken(criteria.token());
 
-        long queueId = payload.get("queueId");
         long memberId = payload.get("memberId");
         long concertId = payload.get("concertId");
         long concertInfoId = payload.get("concertInfoId");
@@ -149,7 +148,7 @@ public class ConcertFacade {
         }
         ConcertSeatDomainDto.OccupancySeatInfo getConcertSeatInfo = concertSeatService.occupancySeat(new ConcertSeatDomainDto.OccupancySeatCommand(concertSeatId, memberId));
 
-        queueService.updateQueueStatus(new QueueDomainDto.UpdateQueueStatusCommand(queueId, QueueStatus.OCCUPANCY));
+        queueService.updateQueueStatus(new QueueDomainDto.UpdateQueueStatusCommand(concertId, memberId, QueueStatus.OCCUPANCY));
 
         return new ConcertFacadeDto.OccupancyConcertSeatResult(getConcertSeatInfo.concertSeatId(), getConcertSeatInfo.memberId(), getConcertSeatInfo.seatStatus());
     }

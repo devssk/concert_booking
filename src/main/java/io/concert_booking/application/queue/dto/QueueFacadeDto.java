@@ -14,8 +14,7 @@ public class QueueFacadeDto {
     public record GetMyQueueNumberResult(
             int frontQueue,
             int myQueueNumber,
-            int backQueue,
-            String queueStatus
+            int backQueue
     ) {}
 
 }
