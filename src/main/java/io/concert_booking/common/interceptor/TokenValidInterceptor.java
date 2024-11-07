@@ -26,21 +26,13 @@ public class TokenValidInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("Authorization");
         if (token == null || token.isEmpty()) {
-            Object startTime = request.getAttribute("StartTime");
-            if (startTime instanceof Long) {
-                long endTime = System.currentTimeMillis();
-                log.warn("Request URL : {}, StartTime : {}, error : {}, Request processing time : {} ms", request.getRequestURI(), startTime, ErrorCode.VALID_ERROR.name(), endTime - (Long) startTime);
-            }
+            log.warn("Request URL : {}, error : {}", request.getRequestURI(), ErrorCode.VALID_ERROR.name());
             return createErrorResponse(response);
         }
         try {
             tokenService.decodeToken(token);
         } catch (ConcertBookingException e) {
-            Object startTime = request.getAttribute("StartTime");
-            if (startTime instanceof Long) {
-                long endTime = System.currentTimeMillis();
-                log.warn("Request URL : {}, StartTime : {}, error : {}, Request processing time : {} ms", request.getRequestURI(), startTime, e.getErrorCode().name(), endTime - (Long) startTime);
-            }
+            log.warn("Request URL : {}error : {}", request.getRequestURI(), e.getErrorCode().name());
             return createErrorResponse(response, e);
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);

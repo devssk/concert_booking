@@ -23,7 +23,7 @@ public class ConcertScheduler {
         concertSeatService.occupancySeatCheckAndClean();
     }
 
-    @Scheduled(fixedDelay = 500)
+    @Scheduled(fixedDelay = 5000)
     public void updateConcertSeatRedis() {
         LocalDate now = LocalDate.now();
         List<Long> concertInfoIdList = concertInfoService.getConcertInfoIdListByDate(now);

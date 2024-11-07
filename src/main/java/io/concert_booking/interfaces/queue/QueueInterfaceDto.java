@@ -28,8 +28,7 @@ public class QueueInterfaceDto {
     public record WaitingNumberResponse(
             int frontQueue,
             int myQueueNumber,
-            int backQueue,
-            String queueStatus
+            int backQueue
     ) {}
 
 }

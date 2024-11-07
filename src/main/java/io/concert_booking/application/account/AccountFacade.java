@@ -10,6 +10,7 @@ import io.concert_booking.domain.concert.entity.SeatStatus;
 import io.concert_booking.domain.concert.service.*;
 import io.concert_booking.domain.member.dto.MemberDomainDto;
 import io.concert_booking.domain.member.service.MemberService;
+import io.concert_booking.domain.queue.dto.QueueDomainDto;
 import io.concert_booking.domain.queue.service.QueueService;
 import io.concert_booking.domain.queue.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,6 @@ public class AccountFacade {
     public AccountFacadeDto.PaymentConcertResult paymentConcert(AccountFacadeDto.PaymentConcertCriteria criteria) {
         Map<String, Long> payload = tokenService.decodeToken(criteria.token());
 
-        long queueId = payload.get("queueId");
         long memberId = payload.get("memberId");
         long concertId = payload.get("concertId");
         long concertInfoId = payload.get("concertInfoId");
@@ -76,7 +76,7 @@ public class AccountFacade {
                 getMemberInfo.memberName()
         ));
 
-        queueService.deleteQueue(queueId);
+        queueService.deleteQueue(new QueueDomainDto.DeleteQueueCommand(concertId, memberId));
 
         return new AccountFacadeDto.PaymentConcertResult(
                 registerBookingInfo.bookingId(),
