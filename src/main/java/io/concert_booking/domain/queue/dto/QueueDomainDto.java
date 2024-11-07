@@ -5,21 +5,51 @@ import io.concert_booking.domain.queue.entity.QueueStatus;
 public class QueueDomainDto {
 
     public record RegisterQueueCommand(
-            long concertId
+            long concertId,
+            long memberId
     ) {}
 
     public record RegisterQueueInfo(
-            long queueId
+            String queueId
     ) {}
 
     public record UpdateQueueStatusCommand(
-            long queueId,
+            long concertId,
+            long memberId,
             QueueStatus queueStatus
     ) {}
 
-    public record UpdateQueueStatusInfo(
-            long queueId,
+    public record DeleteQueueCommand(
+            long concertId,
+            long memberId
+    ) {}
+
+    public record ExistsWaitQueueCommand(
+            long concertId,
+            long memberId
+    ) {}
+
+    public record ExistsPassQueueCommand(
+            long concertId,
+            long memberId
+    ) {}
+
+    public record GetPassQueueStatusCommand(
+            long concertId,
+            long memberId
+    ) {}
+
+    public record GetPassQueueStatusInfo(
             String queueStatus
+    ) {}
+
+    public record GetMyQueueRankingCommand(
+            long concertId,
+            long memberId
+    ) {}
+
+    public record GetQueueMemberIdInfo(
+            long memberId
     ) {}
 
     public record GetQueueInfo(
@@ -29,11 +59,5 @@ public class QueueDomainDto {
             String createdAt
     ) {}
 
-    public record GetQueueListInfo(
-            long queueId,
-            long concertId,
-            String queueStatus,
-            String createdAt
-    ) {}
 
 }

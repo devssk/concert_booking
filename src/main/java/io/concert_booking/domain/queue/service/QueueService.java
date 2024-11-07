@@ -1,75 +1,62 @@
 package io.concert_booking.domain.queue.service;
 
 import io.concert_booking.domain.queue.dto.QueueDomainDto;
-import io.concert_booking.domain.queue.entity.Queue;
-import io.concert_booking.domain.queue.entity.QueueStatus;
-import io.concert_booking.domain.queue.repository.QueueRepository;
+import io.concert_booking.domain.queue.repository.QueueRedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class QueueService {
 
-    private final QueueRepository queueRepository;
+    private final QueueRedis queueRedis;
 
-    @Transactional
     public QueueDomainDto.RegisterQueueInfo registerQueue(QueueDomainDto.RegisterQueueCommand command) {
-        Queue queue = new Queue(command.concertId(), QueueStatus.WAIT);
-        Queue saveQueue = queueRepository.save(queue);
-        return new QueueDomainDto.RegisterQueueInfo(saveQueue.getQueueId());
+        String result = queueRedis.insertWaitQueue(command.concertId(), command.memberId());
+        return new QueueDomainDto.RegisterQueueInfo(result);
     }
 
-    @Transactional
-    public QueueDomainDto.UpdateQueueStatusInfo updateQueueStatus(QueueDomainDto.UpdateQueueStatusCommand command) {
-        Queue getQueue = queueRepository.getQueueById(command.queueId());
-        getQueue.updateQueueStatus(command.queueStatus());
-
-        return new QueueDomainDto.UpdateQueueStatusInfo(getQueue.getQueueId(), getQueue.getQueueStatus().name());
+    public void updateQueueStatus(QueueDomainDto.UpdateQueueStatusCommand command) {
+        queueRedis.updateQueueStatus(command.concertId(), command.memberId(), command.queueStatus().name());
     }
 
-    @Transactional
-    public void deleteQueue(long queueId) {
-        queueRepository.deleteQueueById(queueId);
+    public void deleteQueue(QueueDomainDto.DeleteQueueCommand command) {
+        queueRedis.delete(command.concertId(), command.memberId());
     }
 
-    public QueueDomainDto.GetQueueInfo getQueue(long queueId) {
-        Queue getQueue = queueRepository.getQueueById(queueId);
-        return new QueueDomainDto.GetQueueInfo(
-                getQueue.getQueueId(),
-                getQueue.getConcertId(),
-                getQueue.getQueueStatus().name(),
-                getQueue.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    public boolean existsWaitQueue(QueueDomainDto.ExistsWaitQueueCommand command) {
+        return queueRedis.existsWaitQueue(command.concertId(), command.memberId());
     }
 
-    public List<QueueDomainDto.GetQueueListInfo> getQueueList(long concertId, QueueStatus queueStatus) {
-        List<Queue> getQueueList = queueRepository.getAllQueueByStatus(concertId, queueStatus);
-        return getQueueList.stream().map(queue -> new QueueDomainDto.GetQueueListInfo(
-                queue.getQueueId(),
-                queue.getConcertId(),
-                queue.getQueueStatus().name(),
-                queue.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        ))).toList();
+    public boolean existsPassQueue(QueueDomainDto.ExistsPassQueueCommand command) {
+        return queueRedis.existsPassQueue(command.concertId(), command.memberId());
     }
 
-    public List<Long> getQueueConcertIdList() {
-        return queueRepository.getQueueConcertIdList();
+    public QueueDomainDto.GetPassQueueStatusInfo getPassQueueStatus(QueueDomainDto.GetPassQueueStatusCommand command) {
+        String queueStatus = queueRedis.getQueueStatus(command.concertId(), command.memberId());
+        return new QueueDomainDto.GetPassQueueStatusInfo(queueStatus);
     }
 
-    @Transactional
+    public List<QueueDomainDto.GetQueueMemberIdInfo> getQueueList(long concertId) {
+        List<Long> waitQueueMemberIdList = queueRedis.getAllWaitQueueList(concertId);
+        return waitQueueMemberIdList.stream().map(QueueDomainDto.GetQueueMemberIdInfo::new).toList();
+    }
+
+    public long getMyQueueRanking(QueueDomainDto.GetMyQueueRankingCommand command) {
+        return queueRedis.getMyRank(command.concertId(), command.memberId());
+    }
+
+
     public void passQueue(long concertId, int passCount) {
-        List<Queue> getQueueList = queueRepository.getQueueByStatusIsWait(concertId, passCount);
-        List<Long> queueIdList = getQueueList.stream().map(Queue::getQueueId).toList();
-        queueRepository.passQueue(queueIdList);
-    }
-
-    @Transactional
-    public void getOutQueue(int expiredMinute) {
-        queueRepository.deleteQueueByExpiredTime(expiredMinute);
+        List<Long> waitQueueList = queueRedis.getWaitQueueList(concertId, passCount);
+        if (!waitQueueList.isEmpty()) {
+            for (Long memberId : waitQueueList) {
+                queueRedis.insertEnterQueue(concertId, memberId);
+            }
+        }
+        queueRedis.deleteWaitQueue(concertId, passCount);
     }
 
 }
