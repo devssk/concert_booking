@@ -6,16 +6,16 @@ import io.concert_booking.common.exception.ErrorCode;
 public class QueueInterfaceDto {
 
     public record IssueTokenRequest(
-            Long userId,
+            Long memberId,
             Long concertInfoId
     ) {
         public void validate() {
-            if (userId == null || concertInfoId == null) {
-                String check = userId == null ? "userId" : "concertInfoId";
+            if (memberId == null || concertInfoId == null) {
+                String check = memberId == null ? "memberId" : "concertInfoId";
                 throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
-            if (userId <= 0 || concertInfoId <= 0) {
-                String check = userId <= 0 ? "userId" : "concertInfoId";
+            if (memberId <= 0 || concertInfoId <= 0) {
+                String check = memberId <= 0 ? "memberId" : "concertInfoId";
                 throw new ConcertBookingException(ErrorCode.VALID_ERROR, check);
             }
         }

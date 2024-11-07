@@ -25,7 +25,7 @@ public class QueueController {
     public ResponseDto issueToken(@RequestBody QueueInterfaceDto.IssueTokenRequest request) {
         request.validate();
         QueueFacadeDto.RegisterQueueResult result = queueFacade.registerQueue(new QueueFacadeDto.RegisterQueueCriteria(
-                request.userId(),
+                request.memberId(),
                 request.concertInfoId()
         ));
         return new ResponseDto(ResponseCode.SUCC, new QueueInterfaceDto.IssueTokenResponse(result.token()));

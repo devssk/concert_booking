@@ -169,19 +169,19 @@ class RequestDtoValidTest {
         @DisplayName("IssueTokenRequest 유효성 테스트 - 에러테스트")
         void issueTokenRequestConstructorValidTest01() {
             // given
-            Long userIdIsNull = null;
-            Long userIdIsLessThanOne = 0L;
-            Long userId = 1L;
+            Long memberIdIsNull = null;
+            Long memberIdIsLessThanOne = 0L;
+            Long memberId = 1L;
 
             Long concertInfoIdIsNull = null;
             Long concertInfoIdLessThanOne = 0L;
             Long concertInfoId = 1L;
 
             // when
-            QueueInterfaceDto.IssueTokenRequest issueTokenRequest1 = new QueueInterfaceDto.IssueTokenRequest(userIdIsNull, concertInfoId);
-            QueueInterfaceDto.IssueTokenRequest issueTokenRequest2 = new QueueInterfaceDto.IssueTokenRequest(userIdIsLessThanOne, concertInfoId);
-            QueueInterfaceDto.IssueTokenRequest issueTokenRequest3 = new QueueInterfaceDto.IssueTokenRequest(userId, concertInfoIdIsNull);
-            QueueInterfaceDto.IssueTokenRequest issueTokenRequest4 = new QueueInterfaceDto.IssueTokenRequest(userId, concertInfoIdLessThanOne);
+            QueueInterfaceDto.IssueTokenRequest issueTokenRequest1 = new QueueInterfaceDto.IssueTokenRequest(memberIdIsNull, concertInfoId);
+            QueueInterfaceDto.IssueTokenRequest issueTokenRequest2 = new QueueInterfaceDto.IssueTokenRequest(memberIdIsLessThanOne, concertInfoId);
+            QueueInterfaceDto.IssueTokenRequest issueTokenRequest3 = new QueueInterfaceDto.IssueTokenRequest(memberId, concertInfoIdIsNull);
+            QueueInterfaceDto.IssueTokenRequest issueTokenRequest4 = new QueueInterfaceDto.IssueTokenRequest(memberId, concertInfoIdLessThanOne);
             Throwable userIdThrowable1 = assertThrows(ConcertBookingException.class, issueTokenRequest1::validate);
             Throwable userIdThrowable2 = assertThrows(ConcertBookingException.class, issueTokenRequest2::validate);
             Throwable concertInfoIdThrowable1 = assertThrows(ConcertBookingException.class, issueTokenRequest3::validate);
@@ -189,8 +189,8 @@ class RequestDtoValidTest {
 
             // then
             assertAll(() -> {
-                assertEquals("유효성 검사 실패, userId", userIdThrowable1.getMessage());
-                assertEquals("유효성 검사 실패, userId", userIdThrowable2.getMessage());
+                assertEquals("유효성 검사 실패, memberId", userIdThrowable1.getMessage());
+                assertEquals("유효성 검사 실패, memberId", userIdThrowable2.getMessage());
                 assertEquals("유효성 검사 실패, concertInfoId", concertInfoIdThrowable1.getMessage());
                 assertEquals("유효성 검사 실패, concertInfoId", concertInfoIdThrowable2.getMessage());
             });
@@ -200,17 +200,17 @@ class RequestDtoValidTest {
         @DisplayName("IssueTokenRequest 유효성 테스트 - 정상")
         void issueTokenRequestConstructorValidTest02() {
             // given
-            Long userId = 1L;
+            Long memberId = 1L;
             Long concertInfoId = 1L;
 
             // when
-            QueueInterfaceDto.IssueTokenRequest result = new QueueInterfaceDto.IssueTokenRequest(userId, concertInfoId);
+            QueueInterfaceDto.IssueTokenRequest result = new QueueInterfaceDto.IssueTokenRequest(memberId, concertInfoId);
             result.validate();
 
             // then
             assertAll(() -> {
                 assertNotNull(result);
-                assertEquals(userId, result.userId());
+                assertEquals(memberId, result.memberId());
                 assertEquals(concertInfoId, result.concertInfoId());
             });
         }
