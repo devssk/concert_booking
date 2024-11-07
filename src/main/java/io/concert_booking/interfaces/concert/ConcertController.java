@@ -60,7 +60,7 @@ public class ConcertController {
     public ResponseDto occupancySeat(@RequestBody ConcertInterfaceDto.OccupancySeatRequest request, HttpServletRequest httpServletRequest) {
         request.validate();
         String token = httpServletRequest.getHeader("Authorization");
-        ConcertFacadeDto.OccupancyConcertSeatResult result = concertFacade.OccupancyConcertSeat(new ConcertFacadeDto.OccupancyConcertSeatCriteria(token, request.concertSeatId()));
+        ConcertFacadeDto.OccupancyConcertSeatResult result = concertFacade.OccupancyConcertSeatAndRedisUpdate(new ConcertFacadeDto.OccupancyConcertSeatCriteria(token, request.concertSeatId()));
         return new ResponseDto(ResponseCode.SUCC, new ConcertInterfaceDto.OccupancySeatResponse(result.concertSeatId()));
     }
 
