@@ -19,8 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,15 +39,15 @@ class TokenPassInterceptorTest {
     @Test
     @DisplayName("토큰 상태가 유효하지 않을 경우 - 좌석조회, 좌석예약")
     public void TokenStatusTest01() throws Exception {
-        long queueId = 1L;
         long concertId = 1L;
+        long memberId = 1L;
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", 1L);
-
-        QueueDomainDto.GetQueueInfo getQueueInfo = new QueueDomainDto.GetQueueInfo(queueId, concertId, QueueStatus.WAIT.name(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        payload.put("concertId", concertId);
+        payload.put("memberId", memberId);
 
         doReturn(payload).when(tokenService).decodeToken(anyString());
-        doReturn(getQueueInfo).when(queueService).getQueue(anyLong());
+        doReturn(true).when(queueService).existsWaitQueue(any());
+        doReturn(false).when(queueService).existsPassQueue(any());
 
         mockMvc.perform(get("/concerts/info/seats")
                         .header("Authorization", "token"))
@@ -61,15 +60,18 @@ class TokenPassInterceptorTest {
     @Test
     @DisplayName("토큰 상태가 유효하지 않을 경우 - 결제")
     public void TokenStatusTest02() throws Exception {
-        long queueId = 1L;
         long concertId = 1L;
+        long memberId = 1L;
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", 1L);
+        payload.put("concertId", concertId);
+        payload.put("memberId", memberId);
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = new QueueDomainDto.GetQueueInfo(queueId, concertId, QueueStatus.WAIT.name(), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        QueueDomainDto.GetPassQueueStatusInfo getPassQueueStatusInfo = new QueueDomainDto.GetPassQueueStatusInfo(QueueStatus.ENTER.name());
 
         doReturn(payload).when(tokenService).decodeToken(anyString());
-        doReturn(getQueueInfo).when(queueService).getQueue(anyLong());
+        doReturn(true).when(queueService).existsWaitQueue(any());
+        doReturn(false).when(queueService).existsPassQueue(any());
+        doReturn(getPassQueueStatusInfo).when(queueService).getPassQueueStatus(any());
 
         mockMvc.perform(patch("/accounts/payment")
                         .header("Authorization", "token"))

@@ -40,29 +40,25 @@ class QueueFacadeTest {
     void getMyQueueNumberTest01() throws Exception {
         // given
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", 8L);
         payload.put("concertId", 1L);
-        List<QueueDomainDto.GetQueueListInfo> queueInfoList = new ArrayList<>();
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(1L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:12"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(2L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:13"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(3L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:14"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(4L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:15"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(5L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:18"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(6L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:19"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(7L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:20"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(8L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:21"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(9L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:22"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(10L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:24"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(11L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:27"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(12L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:28"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(13L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:30"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(14L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:32"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(15L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:33"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(16L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:34"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(17L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:35"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(18L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:40"));
+        payload.put("memberId", 1L);
+        List<QueueDomainDto.GetQueueMemberIdInfo> queueMemberIdList = new ArrayList<>();
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(9L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(2L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(6L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(5L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(4L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(1L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(3L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(7L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(8L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(12L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(11L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(13L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(15L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(14L));
         doReturn(payload).when(tokenService).decodeToken(anyString());
-        doReturn(queueInfoList).when(queueService).getQueueList(anyLong(), any());
+        doReturn(queueMemberIdList).when(queueService).getQueueList(anyLong());
 
         // when
         QueueFacadeDto.GetMyQueueNumberResult result = queueFacade.getMyQueueNumber("");
@@ -81,29 +77,25 @@ class QueueFacadeTest {
         // given
         String token = "tempToken";
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", 20L);
         payload.put("concertId", 1L);
-        List<QueueDomainDto.GetQueueListInfo> queueInfoList = new ArrayList<>();
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(1L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:12"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(2L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:13"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(3L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:14"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(4L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:15"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(5L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:18"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(6L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:19"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(7L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:20"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(8L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:21"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(9L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:22"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(10L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:24"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(11L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:27"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(12L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:28"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(13L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:30"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(14L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:32"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(15L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:33"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(16L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:34"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(17L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:35"));
-        queueInfoList.add(new QueueDomainDto.GetQueueListInfo(18L, 1L, QueueStatus.WAIT.name(), "2024-10-17 17:13:40"));
+        payload.put("memberId", 16L);
+        List<QueueDomainDto.GetQueueMemberIdInfo> queueMemberIdList = new ArrayList<>();
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(9L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(2L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(6L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(5L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(4L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(1L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(3L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(7L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(8L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(12L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(11L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(13L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(15L));
+        queueMemberIdList.add(new QueueDomainDto.GetQueueMemberIdInfo(14L));
         doReturn(payload).when(tokenService).decodeToken(anyString());
-        doReturn(queueInfoList).when(queueService).getQueueList(anyLong(), any());
+        doReturn(queueMemberIdList).when(queueService).getQueueList(anyLong());
 
         // when
         Throwable throwable = assertThrows(ConcertBookingException.class, () -> queueFacade.getMyQueueNumber(token));

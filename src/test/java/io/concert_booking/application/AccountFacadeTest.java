@@ -60,7 +60,6 @@ class AccountFacadeTest {
     void paymentConcertTest01() throws Exception {
         // given
         String token = "token";
-        long queueId = 1L;
         long memberId = 1L;
         String memberName = "유애나";
         long performerId = 1L;
@@ -77,15 +76,12 @@ class AccountFacadeTest {
         long accountHistoryId = 1L;
         long bookingId = 1L;
         LocalDateTime createdAtLocalDateTime = LocalDateTime.now().minusMinutes(3);
-        String createdAt = createdAtLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", queueId);
         payload.put("memberId", memberId);
         payload.put("concertId", concertId);
         payload.put("concertInfoId", concertInfoId);
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = new QueueDomainDto.GetQueueInfo(queueId, concertId, QueueStatus.OCCUPANCY.name(), createdAt);
         MemberDomainDto.GetMemberInfo getMemberInfo = new MemberDomainDto.GetMemberInfo(memberId, memberName);
         ConcertDomainDto.GetConcertInfo getConcertInfo = new ConcertDomainDto.GetConcertInfo(concertId, performerId, concertName);
         PerformerDomainDto.GetPerformerInfo getPerformerInfo = new PerformerDomainDto.GetPerformerInfo(performerId, perfomerName);
@@ -126,7 +122,6 @@ class AccountFacadeTest {
     void paymentConcertTest04() throws Exception {
         // given
         String token = "token";
-        long queueId = 1L;
         long memberId = 1L;
         long concertId = 1L;
         long concertInfoId = 1L;
@@ -137,7 +132,6 @@ class AccountFacadeTest {
         String createdAt = createdAtLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         Map<String, Long> payload = new HashMap<>();
-        payload.put("queueId", queueId);
         payload.put("memberId", memberId);
         payload.put("concertId", concertId);
         payload.put("concertInfoId", concertInfoId);
