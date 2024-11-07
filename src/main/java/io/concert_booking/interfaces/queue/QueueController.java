@@ -40,8 +40,7 @@ public class QueueController {
         return new ResponseDto(ResponseCode.SUCC, new QueueInterfaceDto.WaitingNumberResponse(
                 result.frontQueue(),
                 result.myQueueNumber(),
-                result.backQueue(),
-                result.queueStatus()
+                result.backQueue()
         ));
     }
 
