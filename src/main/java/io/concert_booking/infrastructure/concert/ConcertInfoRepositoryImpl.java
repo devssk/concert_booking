@@ -44,6 +44,11 @@ public class ConcertInfoRepositoryImpl implements ConcertInfoRepository {
 
     @Override
     public List<Long> getAllConcertInfoByConcertDate(LocalDate concertDate) {
-        return getAllConcertInfoByConcertDate(concertDate);
+        return concertInfoJpaRepository.getAllConcertInfoByConcertDate(concertDate);
+    }
+
+    @Override
+    public List<Long> getAllConcertIdByConcertDate(LocalDate concertDate) {
+        return concertInfoJpaRepository.getAllConcertIdByConcertDate(concertDate);
     }
 }

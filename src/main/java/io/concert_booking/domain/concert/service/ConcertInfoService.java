@@ -43,4 +43,8 @@ public class ConcertInfoService {
         return concertInfoRepository.getAllConcertInfoByConcertDate(concertDate);
     }
 
+    public List<Long> getAllCocnertIdByConcertDate(LocalDate concertDate) {
+        return concertInfoRepository.getAllConcertIdByConcertDate(concertDate);
+    }
+
 }

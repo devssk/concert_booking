@@ -15,4 +15,6 @@ public interface ConcertInfoRepository {
 
     List<Long> getAllConcertInfoByConcertDate(LocalDate concertDate);
 
+    List<Long> getAllConcertIdByConcertDate(LocalDate concertDate);
+
 }
