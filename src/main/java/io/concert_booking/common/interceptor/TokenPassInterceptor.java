@@ -31,30 +31,26 @@ public class TokenPassInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
         Map<String, Long> payload = tokenService.decodeToken(token);
 
-        long queueId = payload.get("queueId");
+        long concertId = payload.get("concertId");
+        long memberId = payload.get("memberId");
 
-        QueueDomainDto.GetQueueInfo getQueueInfo = queueService.getQueue(queueId);
-        String queueStatus = getQueueInfo.queueStatus();
+        boolean isWait = queueService.existsWaitQueue(new QueueDomainDto.ExistsWaitQueueCommand(concertId, memberId));
+        boolean isPass = queueService.existsPassQueue(new QueueDomainDto.ExistsPassQueueCommand(concertId, memberId));
+
+        if (isWait || !isPass) {
+            log.warn("Request URL : {}, error : {}", request.getRequestURI(), ErrorCode.NOT_ENTER_TOKEN.name());
+            return createErrorResponse(response, ErrorCode.NOT_ENTER_TOKEN);
+        }
+
+        QueueDomainDto.GetPassQueueStatusInfo passQueueStatus = queueService.getPassQueueStatus(new QueueDomainDto.GetPassQueueStatusCommand(concertId, memberId));
 
         if (requestURI.startsWith("/accounts/payment")) {
-            if (!queueStatus.equals(QueueStatus.OCCUPANCY.name())) {
-                Object startTime = request.getAttribute("StartTime");
-                if (startTime instanceof Long) {
-                    long endTime = System.currentTimeMillis();
-                    log.warn("Request URL : {}, StartTime : {}, error : {}, Request processing time : {} ms", request.getRequestURI(), startTime, ErrorCode.NOT_OCCUPANCY_TOKEN.name(), endTime - (Long) startTime);
-                }
+            if (!passQueueStatus.queueStatus().equals(QueueStatus.OCCUPANCY.name())) {
+                log.warn("Request URL : {}, error : {}", request.getRequestURI(), ErrorCode.NOT_OCCUPANCY_TOKEN.name());
                 return createErrorResponse(response, ErrorCode.NOT_OCCUPANCY_TOKEN);
             }
         }
 
-        if (queueStatus.equals(QueueStatus.WAIT.name())) {
-            Object startTime = request.getAttribute("StartTime");
-            if (startTime instanceof Long) {
-                long endTime = System.currentTimeMillis();
-                log.warn("Request URL : {}, StartTime : {}, error : {}, Request processing time : {} ms", request.getRequestURI(), startTime, ErrorCode.NOT_ENTER_TOKEN.name(), endTime - (Long) startTime);
-            }
-            return createErrorResponse(response, ErrorCode.NOT_ENTER_TOKEN);
-        }
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
