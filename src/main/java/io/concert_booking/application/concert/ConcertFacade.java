@@ -38,6 +38,7 @@ public class ConcertFacade {
     private final String CONCERT_PREFIX = "concert:";
     private final String CONCERT_INFO_PREFIX = "concertInfo:";
 
+    @Transactional
     public List<ConcertFacadeDto.GetConcertInfoResult> getConcertInfo(long concertId) {
         String concertKey = CONCERT_PREFIX + concertId;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(concertKey))) {
@@ -57,6 +58,7 @@ public class ConcertFacade {
         return result;
     }
 
+    @Transactional
     public List<ConcertFacadeDto.GetConcertSeatListResult> getConcertSeatList(String token) {
         Map<String, Long> payload = tokenService.decodeToken(token);
 
@@ -86,6 +88,7 @@ public class ConcertFacade {
         return result;
     }
 
+    @Transactional
     public void updateConcertSeatForRedis(List<Long> concertInfoList) {
         for (Long concertInfoId : concertInfoList) {
             String concertInfoKey = CONCERT_INFO_PREFIX + concertInfoId;
@@ -105,6 +108,7 @@ public class ConcertFacade {
         }
     }
 
+    @Transactional
     public ConcertFacadeDto.OccupancyConcertSeatResult OccupancyConcertSeatAndRedisUpdate(ConcertFacadeDto.OccupancyConcertSeatCriteria criteria) {
         ConcertFacadeDto.OccupancyConcertSeatResult result = OccupancyConcertSeat(criteria);
 

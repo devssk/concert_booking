@@ -15,6 +15,7 @@ import io.concert_booking.domain.queue.service.QueueService;
 import io.concert_booking.domain.queue.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public class AccountFacade {
     private final QueueService queueService;
     private final TokenService tokenService;
 
-
+    @Transactional
     public AccountFacadeDto.PaymentConcertResult paymentConcert(AccountFacadeDto.PaymentConcertCriteria criteria) {
         Map<String, Long> payload = tokenService.decodeToken(criteria.token());
 
