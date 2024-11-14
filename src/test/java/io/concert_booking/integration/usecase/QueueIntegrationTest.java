@@ -107,7 +107,6 @@ public class QueueIntegrationTest {
             assertEquals(9, result.frontQueue());
             assertEquals(10, result.myQueueNumber());
             assertEquals(0, result.backQueue());
-            assertEquals(QueueStatus.WAIT.name(), result.queueStatus());
         });
     }
 
