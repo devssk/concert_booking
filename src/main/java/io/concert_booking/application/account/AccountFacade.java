@@ -7,6 +7,7 @@ import io.concert_booking.domain.account.dto.AccountDomainDto;
 import io.concert_booking.domain.account.service.AccountService;
 import io.concert_booking.domain.concert.dto.*;
 import io.concert_booking.domain.concert.entity.SeatStatus;
+import io.concert_booking.domain.concert.publisher.BookingPublisher;
 import io.concert_booking.domain.concert.service.*;
 import io.concert_booking.domain.member.dto.MemberDomainDto;
 import io.concert_booking.domain.member.service.MemberService;
@@ -34,6 +35,7 @@ public class AccountFacade {
     private final BookingService bookingService;
     private final QueueService queueService;
     private final TokenService tokenService;
+    private final BookingPublisher bookingPublisher;
 
     @Transactional
     public AccountFacadeDto.PaymentConcertResult paymentConcert(AccountFacadeDto.PaymentConcertCriteria criteria) {
@@ -78,6 +80,18 @@ public class AccountFacade {
         ));
 
         queueService.deleteQueue(new QueueDomainDto.DeleteQueueCommand(concertId, memberId));
+
+        bookingPublisher.publish(new BookingDomainDto.BookingEvent(
+                registerBookingInfo.bookingId(),
+                concertId,
+                concertInfoId,
+                concertSeatId,
+                paymentAccountInfo.accountHistoryId(),
+                getConcertInfo.concertName(),
+                getConcertInfoInfo.concertDate(),
+                getConcertSeatInfo.seatNumber(),
+                paymentAccountInfo.amount()
+        ));
 
         return new AccountFacadeDto.PaymentConcertResult(
                 registerBookingInfo.bookingId(),

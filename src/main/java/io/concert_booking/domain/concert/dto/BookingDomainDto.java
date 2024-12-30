@@ -54,5 +54,17 @@ public class BookingDomainDto {
             String memberName,
             String createdAt
     ) {}
+
+    public record BookingEvent(
+            long bookingId,
+            long concertId,
+            long concertInfoId,
+            long concertSeatId,
+            long paymentHistoryId,
+            String concertName,
+            String concertDate,
+            int concertSeatNumber,
+            long paymentAmount
+    ) {}
     
 }
