@@ -1,10 +1,6 @@
 ## 시나리오 선정
 콘서트 예약 서비스
 
-### 마일 스톤
-https://github.com/users/devssk/projects/1
-
-
 ### 시나리오 요구사항
 - 유저 토큰 발급 API
 - 예약 가능 날짜 / 좌석 API
